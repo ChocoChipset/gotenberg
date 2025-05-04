@@ -1,6 +1,7 @@
 package gotenberg
 
 import (
+	"sync"
 	"time"
 
 	"github.com/dlclark/regexp2"
@@ -12,6 +13,8 @@ import (
 // easier.
 type ParsedFlags struct {
 	*flag.FlagSet
+	regexpCache     map[string]*regexp2.Regexp
+	regexCacheMutex sync.RWMutex
 }
 
 // MustString returns the string value of a flag given by name.
@@ -201,6 +204,42 @@ func (f *ParsedFlags) MustDeprecatedHumanReadableBytes(deprecated string, newNam
 	return f.MustHumanReadableBytes(newName)
 }
 
+// getCachedRegexp attempts to retrieve a compiled regexp from the cache using a read lock.
+// It returns the regexp and true if found, otherwise nil and false.
+func (f *ParsedFlags) getCachedRegexp(expr string) (*regexp2.Regexp, bool) {
+	f.regexCacheMutex.RLock()
+	defer f.regexCacheMutex.RUnlock() // Ensure unlock even if cache is nil
+
+	if f.regexpCache == nil {
+		return nil, false
+	}
+
+	re, ok := f.regexpCache[expr]
+	return re, ok
+}
+
+// compileAndCacheRegexp compiles a regexp string, caches it, and returns it.
+// It handles locking, cache initialization, and double-checking.
+func (f *ParsedFlags) compileAndCacheRegexp(expr string) *regexp2.Regexp {
+	f.regexCacheMutex.Lock()
+	defer f.regexCacheMutex.Unlock()
+
+	// Double-check cache after acquiring write lock (important!)
+	if f.regexpCache != nil {
+		if re, ok := f.regexpCache[expr]; ok {
+			return re
+		}
+	} else { // Initialize cache if it's nil
+		f.regexpCache = make(map[string]*regexp2.Regexp)
+	}
+
+	// Compile and cache the regexp
+	re := regexp2.MustCompile(expr, 0)
+	f.regexpCache[expr] = re
+
+	return re
+}
+
 // MustRegexp returns the regular expression of a flag given by name.
 // It panics if an error occurs.
 func (f *ParsedFlags) MustRegexp(name string) *regexp2.Regexp {
@@ -209,7 +248,13 @@ func (f *ParsedFlags) MustRegexp(name string) *regexp2.Regexp {
 		panic(err)
 	}
 
-	return regexp2.MustCompile(val, 0)
+	// Check cache first (read lock)
+	if re, ok := f.getCachedRegexp(val); ok {
+		return re
+	}
+
+	// If not in cache, compile and cache (write lock)
+	return f.compileAndCacheRegexp(val)
 }
 
 // MustDeprecatedRegexp returns the regular expression of a deprecated flag if
