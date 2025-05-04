@@ -9,10 +9,10 @@ import (
 
 // ModuleMock is a mock for the [Module] interface.
 type ModuleMock struct {
-	DescriptorMock func() ModuleDescriptor
+	DescriptorMock func() *ModuleDescriptor
 }
 
-func (mod *ModuleMock) Descriptor() ModuleDescriptor {
+func (mod *ModuleMock) Descriptor() *ModuleDescriptor {
 	return mod.DescriptorMock()
 }
 

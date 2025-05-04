@@ -8,61 +8,61 @@ import (
 func TestContext_Module(t *testing.T) {
 	for _, tc := range []struct {
 		scenario    string
-		mods        []ModuleDescriptor
+		mods        []*ModuleDescriptor
 		kind        interface{}
 		expectError bool
 	}{
 		{
 			scenario: "module with error on provision",
-			mods: func() []ModuleDescriptor {
+			mods: func() []*ModuleDescriptor {
 				mod := &struct {
 					ModuleMock
 					ProvisionerMock
 				}{}
-				mod.DescriptorMock = func() ModuleDescriptor {
-					return ModuleDescriptor{ID: "foo", New: func() Module { return mod }}
+				mod.DescriptorMock = func() *ModuleDescriptor {
+					return &ModuleDescriptor{ID: "foo", New: func() Module { return mod }}
 				}
 				mod.ProvisionMock = func(ctx *Context) error { return errors.New("foo") }
-				return []ModuleDescriptor{mod.Descriptor()}
+				return []*ModuleDescriptor{mod.Descriptor()}
 			}(),
 			kind:        new(Provisioner),
 			expectError: true,
 		},
 		{
 			scenario: "two modules instead of one",
-			mods: func() []ModuleDescriptor {
+			mods: func() []*ModuleDescriptor {
 				mod := &struct {
 					ModuleMock
 					ProvisionerMock
 				}{}
-				mod.DescriptorMock = func() ModuleDescriptor {
-					return ModuleDescriptor{ID: "foo", New: func() Module { return mod }}
+				mod.DescriptorMock = func() *ModuleDescriptor {
+					return &ModuleDescriptor{ID: "foo", New: func() Module { return mod }}
 				}
 				mod.ProvisionMock = func(ctx *Context) error { return nil }
-				return []ModuleDescriptor{mod.Descriptor(), mod.Descriptor()}
+				return []*ModuleDescriptor{mod.Descriptor(), mod.Descriptor()}
 			}(),
 			kind:        new(Provisioner),
 			expectError: true,
 		},
 		{
 			scenario: "success",
-			mods: func() []ModuleDescriptor {
+			mods: func() []*ModuleDescriptor {
 				mod := &struct {
 					ModuleMock
 					ProvisionerMock
 				}{}
-				mod.DescriptorMock = func() ModuleDescriptor {
-					return ModuleDescriptor{ID: "foo", New: func() Module { return mod }}
+				mod.DescriptorMock = func() *ModuleDescriptor {
+					return &ModuleDescriptor{ID: "foo", New: func() Module { return mod }}
 				}
 				mod.ProvisionMock = func(ctx *Context) error { return nil }
-				return []ModuleDescriptor{mod.Descriptor()}
+				return []*ModuleDescriptor{mod.Descriptor()}
 			}(),
 			kind:        new(Provisioner),
 			expectError: false,
 		},
 	} {
 		t.Run(tc.scenario, func(t *testing.T) {
-			ctx := NewContext(ParsedFlags{}, tc.mods)
+			ctx := NewContext(&ParsedFlags{}, tc.mods)
 			_, err := ctx.Module(tc.kind)
 
 			if !tc.expectError && err != nil {
@@ -79,62 +79,62 @@ func TestContext_Module(t *testing.T) {
 func TestContext_Modules(t *testing.T) {
 	for _, tc := range []struct {
 		scenario    string
-		mods        []ModuleDescriptor
+		mods        []*ModuleDescriptor
 		kind        interface{}
 		expectError bool
 	}{
 		{
 			scenario: "module with error on provision",
-			mods: func() []ModuleDescriptor {
+			mods: func() []*ModuleDescriptor {
 				mod := &struct {
 					ModuleMock
 					ProvisionerMock
 				}{}
-				mod.DescriptorMock = func() ModuleDescriptor {
-					return ModuleDescriptor{ID: "foo", New: func() Module { return mod }}
+				mod.DescriptorMock = func() *ModuleDescriptor {
+					return &ModuleDescriptor{ID: "foo", New: func() Module { return mod }}
 				}
 				mod.ProvisionMock = func(ctx *Context) error { return errors.New("foo") }
-				return []ModuleDescriptor{mod.Descriptor()}
+				return []*ModuleDescriptor{mod.Descriptor()}
 			}(),
 			kind:        new(Provisioner),
 			expectError: true,
 		},
 		{
 			scenario: "success (module)",
-			mods: func() []ModuleDescriptor {
+			mods: func() []*ModuleDescriptor {
 				mod := &struct {
 					ModuleMock
 					ProvisionerMock
 				}{}
-				mod.DescriptorMock = func() ModuleDescriptor {
-					return ModuleDescriptor{ID: "foo", New: func() Module { return mod }}
+				mod.DescriptorMock = func() *ModuleDescriptor {
+					return &ModuleDescriptor{ID: "foo", New: func() Module { return mod }}
 				}
 				mod.ProvisionMock = func(ctx *Context) error { return nil }
-				return []ModuleDescriptor{mod.Descriptor(), mod.Descriptor()}
+				return []*ModuleDescriptor{mod.Descriptor(), mod.Descriptor()}
 			}(),
 			kind:        new(Provisioner),
 			expectError: false,
 		},
 		{
 			scenario: "success (one module)",
-			mods: func() []ModuleDescriptor {
+			mods: func() []*ModuleDescriptor {
 				mod := &struct {
 					ModuleMock
 					ProvisionerMock
 				}{}
-				mod.DescriptorMock = func() ModuleDescriptor {
-					return ModuleDescriptor{ID: "foo", New: func() Module { return mod }}
+				mod.DescriptorMock = func() *ModuleDescriptor {
+					return &ModuleDescriptor{ID: "foo", New: func() Module { return mod }}
 				}
 				mod.ProvisionMock = func(ctx *Context) error { return nil }
 
-				return []ModuleDescriptor{mod.Descriptor()}
+				return []*ModuleDescriptor{mod.Descriptor()}
 			}(),
 			kind:        new(Provisioner),
 			expectError: false,
 		},
 	} {
 		t.Run(tc.scenario, func(t *testing.T) {
-			ctx := NewContext(ParsedFlags{}, tc.mods)
+			ctx := NewContext(&ParsedFlags{}, tc.mods)
 			_, err := ctx.Modules(tc.kind)
 
 			if !tc.expectError && err != nil {
@@ -161,8 +161,8 @@ func TestContext_loadModule(t *testing.T) {
 					ModuleMock
 					ProvisionerMock
 				}{}
-				mod.DescriptorMock = func() ModuleDescriptor {
-					return ModuleDescriptor{ID: "foo", New: func() Module { return mod }}
+				mod.DescriptorMock = func() *ModuleDescriptor {
+					return &ModuleDescriptor{ID: "foo", New: func() Module { return mod }}
 				}
 				mod.ProvisionMock = func(ctx *Context) error { return errors.New("foo") }
 				return mod
@@ -176,8 +176,8 @@ func TestContext_loadModule(t *testing.T) {
 					ModuleMock
 					ValidatorMock
 				}{}
-				mod.DescriptorMock = func() ModuleDescriptor {
-					return ModuleDescriptor{ID: "foo", New: func() Module { return mod }}
+				mod.DescriptorMock = func() *ModuleDescriptor {
+					return &ModuleDescriptor{ID: "foo", New: func() Module { return mod }}
 				}
 				mod.ValidateMock = func() error { return errors.New("foo") }
 				return mod
@@ -191,8 +191,8 @@ func TestContext_loadModule(t *testing.T) {
 					ModuleMock
 					ValidatorMock
 				}{}
-				mod.DescriptorMock = func() ModuleDescriptor {
-					return ModuleDescriptor{ID: "foo", New: func() Module { return mod }}
+				mod.DescriptorMock = func() *ModuleDescriptor {
+					return &ModuleDescriptor{ID: "foo", New: func() Module { return mod }}
 				}
 				mod.ValidateMock = func() error { return nil }
 
@@ -202,7 +202,7 @@ func TestContext_loadModule(t *testing.T) {
 		},
 	} {
 		t.Run(tc.scenario, func(t *testing.T) {
-			ctx := NewContext(ParsedFlags{}, nil)
+			ctx := NewContext(&ParsedFlags{}, nil)
 			err := ctx.loadModule("foo", tc.instance)
 
 			if !tc.expectError && err != nil {

@@ -15,21 +15,21 @@ func TestBuildDebug(t *testing.T) {
 
 	fs := flag.NewFlagSet("gotenberg", flag.ExitOnError)
 	fs.String("foo", "bar", "Set foo")
-	ctx := NewContext(ParsedFlags{
+	ctx := NewContext(&ParsedFlags{
 		FlagSet: fs,
-	}, func() []ModuleDescriptor {
+	}, func() []*ModuleDescriptor {
 		mod1 := &struct {
 			ModuleMock
 		}{}
-		mod1.DescriptorMock = func() ModuleDescriptor {
-			return ModuleDescriptor{ID: "foo", New: func() Module { return mod1 }}
+		mod1.DescriptorMock = func() *ModuleDescriptor {
+			return &ModuleDescriptor{ID: "foo", New: func() Module { return mod1 }}
 		}
 		mod2 := &struct {
 			ModuleMock
 			DebuggableMock
 		}{}
-		mod2.DescriptorMock = func() ModuleDescriptor {
-			return ModuleDescriptor{ID: "bar", New: func() Module { return mod2 }}
+		mod2.DescriptorMock = func() *ModuleDescriptor {
+			return &ModuleDescriptor{ID: "bar", New: func() Module { return mod2 }}
 		}
 		mod2.DebugMock = func() map[string]interface{} {
 			return map[string]interface{}{
@@ -37,7 +37,7 @@ func TestBuildDebug(t *testing.T) {
 			}
 		}
 
-		return []ModuleDescriptor{mod1.Descriptor(), mod2.Descriptor()}
+		return []*ModuleDescriptor{mod1.Descriptor(), mod2.Descriptor()}
 	}())
 
 	// Load modules.

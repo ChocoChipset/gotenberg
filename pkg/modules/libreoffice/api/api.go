@@ -203,8 +203,8 @@ type Provider interface {
 }
 
 // Descriptor returns a [Api]'s module descriptor.
-func (a *Api) Descriptor() gotenberg.ModuleDescriptor {
-	return gotenberg.ModuleDescriptor{
+func (a *Api) Descriptor() *gotenberg.ModuleDescriptor {
+	return &gotenberg.ModuleDescriptor{
 		ID: "libreoffice-api",
 		FlagSet: func() *flag.FlagSet {
 			fs := flag.NewFlagSet("api", flag.ExitOnError)

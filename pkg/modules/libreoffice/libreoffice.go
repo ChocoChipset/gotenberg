@@ -23,8 +23,8 @@ type LibreOffice struct {
 }
 
 // Descriptor returns a [LibreOffice]'s module descriptor.
-func (mod *LibreOffice) Descriptor() gotenberg.ModuleDescriptor {
-	return gotenberg.ModuleDescriptor{
+func (mod *LibreOffice) Descriptor() *gotenberg.ModuleDescriptor {
+	return &gotenberg.ModuleDescriptor{
 		ID: "libreoffice",
 		FlagSet: func() *flag.FlagSet {
 			fs := flag.NewFlagSet("libreoffice", flag.ExitOnError)

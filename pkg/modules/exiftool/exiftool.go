@@ -27,8 +27,8 @@ type ExifTool struct {
 }
 
 // Descriptor returns [ExifTool]'s module descriptor.
-func (engine *ExifTool) Descriptor() gotenberg.ModuleDescriptor {
-	return gotenberg.ModuleDescriptor{
+func (engine *ExifTool) Descriptor() *gotenberg.ModuleDescriptor {
+	return &gotenberg.ModuleDescriptor{
 		ID:  "exiftool",
 		New: func() gotenberg.Module { return new(ExifTool) },
 	}

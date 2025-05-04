@@ -26,8 +26,8 @@ type PdfTk struct {
 }
 
 // Descriptor returns a [PdfTk]'s module descriptor.
-func (engine *PdfTk) Descriptor() gotenberg.ModuleDescriptor {
-	return gotenberg.ModuleDescriptor{
+func (engine *PdfTk) Descriptor() *gotenberg.ModuleDescriptor {
+	return &gotenberg.ModuleDescriptor{
 		ID:  "pdftk",
 		New: func() gotenberg.Module { return new(PdfTk) },
 	}

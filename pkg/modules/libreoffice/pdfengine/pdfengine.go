@@ -22,8 +22,8 @@ type LibreOfficePdfEngine struct {
 }
 
 // Descriptor returns a [LibreOfficePdfEngine]'s module descriptor.
-func (engine *LibreOfficePdfEngine) Descriptor() gotenberg.ModuleDescriptor {
-	return gotenberg.ModuleDescriptor{
+func (engine *LibreOfficePdfEngine) Descriptor() *gotenberg.ModuleDescriptor {
+	return &gotenberg.ModuleDescriptor{
 		ID:  "libreoffice-pdfengine",
 		New: func() gotenberg.Module { return new(LibreOfficePdfEngine) },
 	}

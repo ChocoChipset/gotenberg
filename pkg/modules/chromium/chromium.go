@@ -350,8 +350,8 @@ type Provider interface {
 }
 
 // Descriptor returns a [Chromium]'s module descriptor.
-func (mod *Chromium) Descriptor() gotenberg.ModuleDescriptor {
-	return gotenberg.ModuleDescriptor{
+func (mod *Chromium) Descriptor() *gotenberg.ModuleDescriptor {
+	return &gotenberg.ModuleDescriptor{
 		ID: "chromium",
 		FlagSet: func() *flag.FlagSet {
 			fs := flag.NewFlagSet("chromium", flag.ExitOnError)

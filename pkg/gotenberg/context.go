@@ -8,16 +8,16 @@ import (
 // Context is a struct that helps to initialize modules. When provisioning, a
 // module may use the context to get other modules that it needs internally.
 type Context struct {
-	flags           ParsedFlags
-	descriptors     []ModuleDescriptor
+	flags           *ParsedFlags
+	descriptors     []*ModuleDescriptor
 	moduleInstances map[string]interface{}
 }
 
 // NewContext creates a [Context].
 // In a module, prefer the [Provisioner] interface to get a [Context].
 func NewContext(
-	flags ParsedFlags,
-	descriptors []ModuleDescriptor,
+	flags *ParsedFlags,
+	descriptors []*ModuleDescriptor,
 ) *Context {
 	return &Context{
 		flags:           flags,
@@ -32,7 +32,7 @@ func NewContext(
 //		flags := ctx.ParsedFlags()
 //		m.foo = flags.RequiredString("foo")
 //	}
-func (ctx *Context) ParsedFlags() ParsedFlags {
+func (ctx *Context) ParsedFlags() *ParsedFlags {
 	return ctx.flags
 }
 

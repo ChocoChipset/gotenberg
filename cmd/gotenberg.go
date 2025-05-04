@@ -5,12 +5,16 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"runtime"
+	"runtime/pprof"
 	"strings"
 	"syscall"
 	"time"
 
 	flag "github.com/spf13/pflag"
 	"golang.org/x/sync/errgroup"
+
+	_ "net/http/pprof"
 
 	"github.com/gotenberg/gotenberg/v8/pkg/gotenberg"
 )
@@ -35,13 +39,32 @@ var Version = "snapshot"
 
 // Run starts the Gotenberg application. Call this in the main of your program.
 func Run() {
+
+	// Create a CPU profile file
+	f, fileErr := os.Create("profile.prof")
+	if fileErr != nil {
+		panic(fileErr)
+	}
+	defer f.Close()
+
+	runtime.SetCPUProfileRate(40000)
+
+	// Start CPU profiling
+	if profileErr := pprof.StartCPUProfile(f); profileErr != nil {
+		panic(profileErr)
+	}
+
+	// go func() {
+	// 	http.ListenAndServe("localhost:6060", nil)
+	// }()
+
 	fmt.Printf(banner, Version)
 	gotenberg.Version = Version
 
 	// Create the root FlagSet and adds the modules flags to it.
 	fs := flag.NewFlagSet("gotenberg", flag.ExitOnError)
 	fs.Duration("gotenberg-graceful-shutdown-duration", time.Duration(30)*time.Second, "Set the graceful shutdown duration")
-	fs.Bool("gotenberg-build-debug-data", true, "Set if build data is needed")
+	fs.Bool("gotenberg-build-debug-data", false, "Set if build data is needed")
 
 	descriptors := gotenberg.GetModuleDescriptors()
 	var modsInfo string
@@ -93,7 +116,7 @@ func Run() {
 	// Get the graceful shutdown duration.
 	gracefulShutdownDuration := parsedFlags.MustDuration("gotenberg-graceful-shutdown-duration")
 
-	ctx := gotenberg.NewContext(parsedFlags, descriptors)
+	ctx := gotenberg.NewContext(&parsedFlags, descriptors)
 
 	// Start application modules.
 	apps, err := ctx.Modules(new(gotenberg.App))
@@ -140,7 +163,7 @@ func Run() {
 
 	if parsedFlags.MustBool("gotenberg-build-debug-data") {
 		// Build the debug data.
-		gotenberg.BuildDebug(ctx)
+		//		gotenberg.BuildDebug(ctx)
 	}
 
 	quit := make(chan os.Signal, 1)
@@ -148,8 +171,10 @@ func Run() {
 	// We'll accept graceful shutdowns when quit via SIGINT (Ctrl+C) or SIGTERM (Kubernetes).
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
+	pprof.StopCPUProfile()
+
 	// Block until we receive our signal.
-	<-quit
+	//<-quit
 
 	gracefulShutdownCtx, cancel := context.WithTimeout(context.Background(), gracefulShutdownDuration)
 	defer cancel()

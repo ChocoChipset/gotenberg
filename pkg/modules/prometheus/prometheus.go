@@ -33,8 +33,8 @@ type Prometheus struct {
 }
 
 // Descriptor returns a [Prometheus]'s module descriptor.
-func (mod *Prometheus) Descriptor() gotenberg.ModuleDescriptor {
-	return gotenberg.ModuleDescriptor{
+func (mod *Prometheus) Descriptor() *gotenberg.ModuleDescriptor {
+	return &gotenberg.ModuleDescriptor{
 		ID: "prometheus",
 		FlagSet: func() *flag.FlagSet {
 			fs := flag.NewFlagSet("prometheus", flag.ExitOnError)

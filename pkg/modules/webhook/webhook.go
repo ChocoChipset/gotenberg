@@ -29,8 +29,8 @@ type Webhook struct {
 }
 
 // Descriptor returns an [Webhook]'s module descriptor.
-func (w *Webhook) Descriptor() gotenberg.ModuleDescriptor {
-	return gotenberg.ModuleDescriptor{
+func (w *Webhook) Descriptor() *gotenberg.ModuleDescriptor {
+	return &gotenberg.ModuleDescriptor{
 		ID: "webhook",
 		FlagSet: func() *flag.FlagSet {
 			fs := flag.NewFlagSet("webhook", flag.ExitOnError)

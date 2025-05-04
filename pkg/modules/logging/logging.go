@@ -41,8 +41,8 @@ type Logging struct {
 }
 
 // Descriptor returns a [Logging]'s module descriptor.
-func (log *Logging) Descriptor() gotenberg.ModuleDescriptor {
-	return gotenberg.ModuleDescriptor{
+func (log *Logging) Descriptor() *gotenberg.ModuleDescriptor {
+	return &gotenberg.ModuleDescriptor{
 		ID: "logging",
 		FlagSet: func() *flag.FlagSet {
 			fs := flag.NewFlagSet("logging", flag.ExitOnError)

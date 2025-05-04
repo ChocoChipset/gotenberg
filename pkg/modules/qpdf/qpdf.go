@@ -27,8 +27,8 @@ type QPdf struct {
 }
 
 // Descriptor returns a [QPdf]'s module descriptor.
-func (engine *QPdf) Descriptor() gotenberg.ModuleDescriptor {
-	return gotenberg.ModuleDescriptor{
+func (engine *QPdf) Descriptor() *gotenberg.ModuleDescriptor {
+	return &gotenberg.ModuleDescriptor{
 		ID:  "qpdf",
 		New: func() gotenberg.Module { return new(QPdf) },
 	}

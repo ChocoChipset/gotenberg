@@ -7,7 +7,7 @@ import (
 
 func TestMustRegisterModule(t *testing.T) {
 	descriptorsMu.RLock()
-	descriptors = map[string]ModuleDescriptor{
+	descriptors = map[string]*ModuleDescriptor{
 		"a": {ID: "a"},
 	}
 	descriptorsMu.RUnlock()
@@ -51,7 +51,7 @@ func TestMustRegisterModule(t *testing.T) {
 	} {
 		t.Run(tc.scenario, func(t *testing.T) {
 			mod := &struct{ ModuleMock }{}
-			mod.DescriptorMock = func() ModuleDescriptor { return ModuleDescriptor{ID: tc.ID, New: tc.New} }
+			mod.DescriptorMock = func() *ModuleDescriptor { return &ModuleDescriptor{ID: tc.ID, New: tc.New} }
 
 			if tc.expectPanic {
 				defer func() {
@@ -74,13 +74,13 @@ func TestMustRegisterModule(t *testing.T) {
 	}
 
 	descriptorsMu.RLock()
-	descriptors = make(map[string]ModuleDescriptor)
+	descriptors = make(map[string]*ModuleDescriptor)
 	descriptorsMu.RUnlock()
 }
 
 func TestGetModuleDescriptors(t *testing.T) {
 	descriptorsMu.RLock()
-	descriptors = map[string]ModuleDescriptor{
+	descriptors = map[string]*ModuleDescriptor{
 		"d": {ID: "d"},
 		"c": {ID: "c"},
 		"b": {ID: "b"},
@@ -102,6 +102,6 @@ func TestGetModuleDescriptors(t *testing.T) {
 	}
 
 	descriptorsMu.RLock()
-	descriptors = make(map[string]ModuleDescriptor)
+	descriptors = make(map[string]*ModuleDescriptor)
 	descriptorsMu.RUnlock()
 }

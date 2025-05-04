@@ -38,8 +38,8 @@ type PdfEngines struct {
 }
 
 // Descriptor returns a PdfEngines' module descriptor.
-func (mod *PdfEngines) Descriptor() gotenberg.ModuleDescriptor {
-	return gotenberg.ModuleDescriptor{
+func (mod *PdfEngines) Descriptor() *gotenberg.ModuleDescriptor {
+	return &gotenberg.ModuleDescriptor{
 		ID: "pdfengines",
 		FlagSet: func() *flag.FlagSet {
 			fs := flag.NewFlagSet("pdfengines", flag.ExitOnError)

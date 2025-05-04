@@ -16,8 +16,8 @@ import (
 //		property string
 //	}
 //
-//	func (YourModule) Descriptor() gotenberg.ModuleDescriptor {
-//		return gotenberg.ModuleDescriptor{
+//	func (YourModule) Descriptor() *gotenberg.ModuleDescriptor {
+//		return &gotenberg.ModuleDescriptor{
 //			ID: "your_module",
 //			FlagSet: func() *flag.FlagSet {
 //				fs := flag.NewFlagSet("your_module", flag.ExitOnError)
@@ -29,7 +29,7 @@ import (
 //		}
 //	}
 type Module interface {
-	Descriptor() ModuleDescriptor
+	Descriptor() *ModuleDescriptor
 }
 
 // ModuleDescriptor describes your module for the application.
@@ -122,11 +122,11 @@ func MustRegisterModule(mod Module) {
 }
 
 // GetModuleDescriptors returns the descriptors of all registered modules.
-func GetModuleDescriptors() []ModuleDescriptor {
+func GetModuleDescriptors() []*ModuleDescriptor {
 	descriptorsMu.RLock()
 	defer descriptorsMu.RUnlock()
 
-	mods := make([]ModuleDescriptor, len(descriptors))
+	mods := make([]*ModuleDescriptor, len(descriptors))
 	i := 0
 
 	for _, desc := range descriptors {
@@ -142,6 +142,6 @@ func GetModuleDescriptors() []ModuleDescriptor {
 }
 
 var (
-	descriptors   = make(map[string]ModuleDescriptor)
+	descriptors   = make(map[string]*ModuleDescriptor)
 	descriptorsMu sync.RWMutex
 )

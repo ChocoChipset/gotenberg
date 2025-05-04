@@ -167,8 +167,8 @@ type HealthChecker interface {
 }
 
 // Descriptor returns an [Api]'s module descriptor.
-func (a *Api) Descriptor() gotenberg.ModuleDescriptor {
-	return gotenberg.ModuleDescriptor{
+func (a *Api) Descriptor() *gotenberg.ModuleDescriptor {
+	return &gotenberg.ModuleDescriptor{
 		ID: "api",
 		FlagSet: func() *flag.FlagSet {
 			fs := flag.NewFlagSet("api", flag.ExitOnError)
